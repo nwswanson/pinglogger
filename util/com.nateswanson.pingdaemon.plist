@@ -1,0 +1,30 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" 
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.nateswanson.pingdaemon</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/bin/pingdaemon</string>
+        <string>--ip=1.1.1.1</string>
+        <string>--interval=10s</string>
+        <string>--db=/var/log/pinglog.db</string>
+    </array>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/var/log/pingdaemon.stdout.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/var/log/pingdaemon.stderr.log</string>
+</dict>
+</plist>

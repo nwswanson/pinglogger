@@ -1,0 +1,6 @@
+*.swp
+.idea/
+main
+*db
+*db-shm
+*db-wal
