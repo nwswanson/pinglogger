@@ -17,19 +17,52 @@
 
 ## Usage
 
-1. **Build the tool**:
+### Building the Tool
 
-   ```bash
-   go build -o pingdaemon
-   ```
+`pingdaemon` can be built for your current operating system or cross-compiled for other supported platforms.
 
-2. **Run it with sudo** (required for raw ICMP packets):
+#### Build for your current OS
 
-   ```bash
-   sudo ./pingdaemon --ip 1.1.1.1 --interval 10s --db ~/pinglog.db
-   ```
+To build the executable for the operating system you are currently on:
 
-3. Leave it running, or wrap it in a `launchd` agent if you want it to start automatically.
+```bash
+go build -o pingdaemon
+```
+
+#### Cross-compile for macOS
+
+If you are building on a Linux machine and targeting macOS, you need to cross-compile. Specify the target operating system (`GOOS=darwin`) and the target architecture (`GOARCH`).
+
+*   **For Intel-based Macs:**
+    ```bash
+    GOOS=darwin GOARCH=amd64 go build -o pingdaemon_macos
+    ```
+*   **For Apple Silicon (M1/M2/etc.) Macs:**
+    ```bash
+    GOOS=darwin GOARCH=arm64 go build -o pingdaemon_macos
+    ```
+The output executable will be named `pingdaemon_macos`.
+
+### Running the Tool
+
+Once built, you can run `pingdaemon` with various command-line flags:
+
+*   `--ip`: IP address to ping (default: `8.8.8.8`)
+*   `--interval`: Ping interval (default: `5s`)
+*   `--db`: SQLite DB file (default: `pings.db`)
+
+**Example:**
+
+*   **On Linux (requires sudo):**
+    ```bash
+    sudo ./pingdaemon --ip 1.1.1.1 --interval 10s --db ~/pinglog.db
+    ```
+*   **On macOS (no sudo required):**
+    ```bash
+    ./pingdaemon_macos --ip 1.1.1.1 --interval 10s --db ~/pinglog.db
+    ```
+
+Leave it running, or wrap it in a `launchd` agent (macOS) or `systemd` service (Linux) if you want it to start automatically.
 
 ## Why Use It?
 
@@ -51,6 +84,11 @@ CREATE TABLE pings (
 
 ## Requirements
 
-- macOS (uses raw ICMP sockets)
-- Go 1.20+
-- Root privileges to run
+- Go 1.24+
+
+### Platform Compatibility
+
+`pingdaemon` is designed to work on both Linux and macOS.
+
+*   **Linux:** Uses raw ICMP sockets and requires elevated privileges (`sudo`) to run.
+*   **macOS:** Uses the native `ping` command via `os/exec` and does *not* require elevated privileges.
