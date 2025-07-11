@@ -10,8 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/go-ping/ping"
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 	"github.com/spf13/cobra"
 )
 
@@ -35,14 +34,7 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-func isPrivileged() bool {
-	return os.Geteuid() == 0
-}
-
 func main() {
-	if !isPrivileged() {
-		log.Fatal("This program must be run with elevated privileges (sudo) to send ICMP packets.")
-	}
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatal(err)
 	}
@@ -115,7 +107,7 @@ loop:
 }
 
 func openDB() *sql.DB {
-	db, err := sql.Open("sqlite3", dbFile)
+	db, err := sql.Open("sqlite", dbFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -139,19 +131,4 @@ func createSchema(db *sql.DB) {
 	}
 }
 
-func pingHost(ip string, interval time.Duration) (bool, time.Duration) {
-	pinger, err := ping.NewPinger(ip)
-	pinger.SetPrivileged(true)
-	if err != nil {
-		log.Printf("Ping setup failed: %v", err)
-		return false, 0
-	}
-	pinger.Count = 1
-	pinger.Timeout = interval * 80 / 100 // e.g., 80% of interval
-	if err := pinger.Run(); err != nil {
-		log.Printf("Ping run failed: %v", err)
-		return false, 0
-	}
-	stats := pinger.Statistics()
-	return stats.PacketsRecv > 0, stats.AvgRtt
-}
+
